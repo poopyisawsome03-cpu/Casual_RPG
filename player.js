@@ -48,14 +48,18 @@ function playerCannonShoot() {
 
     const now = Date.now();
     const p = gameState.player;
-    if (now - p.cannonLastShot < p.cannonCooldown) return;
+    // Fire rate (attackSpeed) affects cannon cooldown
+    const cooldown = p.cannonCooldown / p.attackSpeed;
+    if (now - p.cannonLastShot < cooldown) return;
 
     let nearest = null, nearDist = Infinity;
     gameState.enemies.forEach(e => {
         const d = dist(p.x, p.y, e.x, e.y);
         if (d < nearDist) { nearDist = d; nearest = e; }
     });
-    if (!nearest || nearDist > p.cannonRange) return;
+    // Range (attackRange) affects cannon range
+    const effectiveRange = p.cannonRange + (p.attackRange - 300);
+    if (!nearest || nearDist > effectiveRange) return;
 
     p.cannonLastShot = now;
 
